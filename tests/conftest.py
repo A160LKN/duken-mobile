@@ -57,16 +57,13 @@ def appium_server():
         proc.terminate()
 
 
-@pytest.fixture(scope="session")
-def driver(appium_server):
-    # Свежесобранный APK ставится явно: enforceAppInstall не переустанавливает ту же versionCode
-    device.install(config.APK_PATH)
+def _new_session():
     options = UiAutomator2Options()
     options.udid = config.DEVICE_SERIAL
     options.app = config.APK_PATH
     options.app_package = config.APP_PACKAGE
     options.app_activity = config.APP_ACTIVITY
-    options.no_reset = True              # данные чистит фикстура fresh_app, а не Appium
+    options.no_reset = True              # данные чистит фикстура app, а не Appium
     options.auto_launch = False          # запуск — через adb с extras тестовых хуков
     options.auto_grant_permissions = False  # системные диалоги разрешений тоже проверяются
     options.new_command_timeout = 300
@@ -75,8 +72,49 @@ def driver(appium_server):
     drv.implicitly_wait(0)
     # resource-id у Compose — это testTag без имени пакета: драйвер не должен дописывать «kz.duken.mobile:id/»
     drv.update_settings({"disableIdLocatorAutocompletion": True})
-    yield drv
-    drv.quit()
+    return drv
+
+
+class Session:
+    """Сессия Appium, которая переживает сбой службы UiAutomator2 на устройстве.
+
+    Если служба упала (так бывает на медленном эмуляторе в CI), тест, в котором это случилось, падает —
+    это видно в отчёте. Но следующий тест получает новую сессию, а не каскад ошибок
+    «instrumentation process is not running».
+    """
+
+    def __init__(self):
+        self.driver = _new_session()
+
+    def alive(self) -> bool:
+        try:
+            self.driver.get_window_size()  # команда идёт до службы на устройстве
+            return True
+        except Exception:
+            return False
+
+    def ensure(self):
+        if not self.alive():
+            try:
+                self.driver.quit()
+            except Exception:
+                pass
+            self.driver = _new_session()
+        return self.driver
+
+
+@pytest.fixture(scope="session")
+def appium_session(appium_server):
+    # Свежесобранный APK ставится явно: enforceAppInstall не переустанавливает ту же versionCode
+    device.install(config.APK_PATH)
+    session = Session()
+    yield session
+    session.driver.quit()
+
+
+@pytest.fixture
+def driver(appium_session):
+    return appium_session.ensure()
 
 
 class App:

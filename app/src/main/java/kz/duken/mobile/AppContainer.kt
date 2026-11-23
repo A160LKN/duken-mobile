@@ -33,8 +33,13 @@ class AppContainer(context: Context) {
     /** Сервер отклонил токен: экран входа показывает «сессия истекла» */
     val sessionExpired = _sessionExpired.asSharedFlow()
 
+    /** Чтение и безопасные запросы — с автоповтором при устаревшем соединении */
     @Volatile
-    private var api: ShopApi = build(baseUrl())
+    private var api: ShopApi = build(baseUrl(), safeToRetry = true)
+
+    /** Оплата, создание и отмена заказа, регистрация — без автоповтора и без пула соединений */
+    @Volatile
+    private var writeApi: ShopApi = build(baseUrl(), safeToRetry = false)
 
     init {
         scope.launch { sessionStore.session.collect { token = it?.token } }
@@ -46,7 +51,8 @@ class AppContainer(context: Context) {
     fun overrideBaseUrl(url: String) {
         if (!BuildConfig.TEST_HOOKS || url == baseUrl()) return
         prefs.edit().putString(KEY_BASE_URL, url).apply()
-        api = build(url)
+        api = build(url, safeToRetry = true)
+        writeApi = build(url, safeToRetry = false)
     }
 
     /** Только для debug-сборки: сессия из автотеста, без экрана входа */
@@ -56,16 +62,16 @@ class AppContainer(context: Context) {
         runBlocking { sessionStore.save(Session(token, email)) }
     }
 
-    private fun build(url: String) = ApiClient.create(url, { token }) {
+    private fun build(url: String, safeToRetry: Boolean) = ApiClient.create(url, safeToRetry, { token }) {
         token = null
         scope.launch { sessionStore.clear() }
         _sessionExpired.tryEmit(Unit)
     }
 
-    val auth = AuthRepository({ api }, sessionStore)
+    val auth = AuthRepository({ api }, { writeApi }, sessionStore)
     val catalog = CatalogRepository { api }
     val cart = CartRepository(database.cart())
-    val orders = OrderRepository { api }
+    val orders = OrderRepository({ api }, { writeApi })
 
     private companion object {
         const val KEY_BASE_URL = "api_base_url"

@@ -104,6 +104,16 @@ class TestNetwork:
         # Ровно две попытки — обе от пользователя, без тихого повтора HTTP-клиентом
         assert len(app.api.calls("POST", f"/orders/{order_id}/pay")) == 2
 
+    def test_request_after_idle_keepalive_closed(self, app):
+        """Сервер закрыл простаивающее соединение (uvicorn — через 5 с). Следующий запрос не должен
+        показывать «нет интернета»: клиент открывает новое соединение."""
+        catalog = app.start_logged_in()
+        catalog.add_to_cart(2)
+        time.sleep(7)  # дольше keep-alive сервера
+        cart = app.nav.cart()
+        cart.wait_quote()
+        assert not cart.visible("quote_error")
+
     @pytest.mark.stub_only
     def test_filter_error_then_retry(self, app):
         """Ошибка сервера при смене фильтра: понятный текст с сервера и повтор с тем же фильтром."""

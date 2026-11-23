@@ -138,6 +138,9 @@ def order_out(o: dict) -> dict:
 class Handler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
     server_version = "duken-stub"
+    # Как uvicorn у shop-api: простаивающее keep-alive соединение закрывается через 5 секунд.
+    # Без этого клиент никогда не встречает соединение, закрытое сервером, и такой дефект не виден
+    timeout = 5
 
     def log_message(self, *_):  # журнал пишется в state.log, а не в stderr
         pass

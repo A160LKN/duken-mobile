@@ -16,6 +16,9 @@ import org.junit.Before
 import org.junit.Test
 
 /** Как ответы сервера превращаются в ошибки для экрана. Настоящий HTTP, без устройства. */
+private const val ORDER = """{"id":1,"status":"paid","items":[],"subtotal":1,"discount":0,"total":1,
+    "promo_code":null,"created_at":"2026-01-01T00:00:00Z"}"""
+
 class ApiErrorTest {
     private val server = MockWebServer()
     private var token: String? = null
@@ -24,7 +27,8 @@ class ApiErrorTest {
     @Before fun start() = server.start()
     @After fun stop() = server.shutdown()
 
-    private fun api() = ApiClient.create(server.url("/").toString(), { token }) { unauthorizedCalls++ }
+    private fun api(safeToRetry: Boolean = true) =
+        ApiClient.create(server.url("/").toString(), safeToRetry, { token }) { unauthorizedCalls++ }
 
     private fun json(code: Int, body: String) = MockResponse().setResponseCode(code)
         .setHeader("Content-Type", "application/json").setBody(body)
@@ -65,9 +69,32 @@ class ApiErrorTest {
 
     @Test fun droppedConnectionIsOffline() = runTest {
         server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AT_START))
-        val r = apiCall { api().products() } as ApiResult.Fail
+        val r = apiCall { api(safeToRetry = false).products() } as ApiResult.Fail
         assertEquals(AppError.Offline, r.error)
         assertTrue(r.error.retryable)
+    }
+
+    /** BUG-005: оплату после обрыва HTTP-клиент сам не переотправляет — решает пользователь */
+    @Test fun writeClientDoesNotRetryPaymentAfterDrop() = runTest {
+        server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AFTER_REQUEST))
+        server.enqueue(json(200, ORDER))
+        val r = apiCall { api(safeToRetry = false).pay(1, kz.duken.mobile.data.api.PaymentIn("tok_visa")) }
+        assertTrue(r is ApiResult.Fail)
+        assertEquals(1, server.requestCount)
+    }
+
+    /**
+     * BUG-012: сервер закрыл keep-alive соединение (uvicorn — после 5 с простоя), клиент об этом не знает
+     * и берёт соединение из пула. Клиент для чтения повторяет запрос по новому соединению сам.
+     */
+    @Test fun readClientSurvivesConnectionClosedByServer() = runTest {
+        val page = """{"items":[],"total":0,"limit":20,"offset":0}"""
+        // Ответ без «Connection: close», после него сервер рвёт соединение — как закрытие простаивающего
+        server.enqueue(json(200, page).setSocketPolicy(SocketPolicy.DISCONNECT_AT_END))
+        server.enqueue(json(200, page))
+        val client = api(safeToRetry = true)
+        assertTrue(apiCall { client.products() } is ApiResult.Ok)
+        assertTrue(apiCall { client.products() } is ApiResult.Ok)
     }
 
     @Test fun htmlFromProxyIsNotCrash() = runTest {

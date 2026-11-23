@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Дүкен</string>
+
+    <string name="nav_catalog">Каталог</string>
+    <string name="nav_cart">Себет</string>
+    <string name="nav_orders">Тапсырыстар</string>
+    <string name="nav_profile">Профиль</string>
+    <string name="cart_with_items">Себет, тауарлар: %1$d</string>
+    <string name="back">Артқа</string>
+
+    <string name="login_title">Кіру</string>
+    <string name="register_title">Тіркелу</string>
+    <string name="email">Email</string>
+    <string name="password">Құпиясөз</string>
+    <string name="login_button">Кіру</string>
+    <string name="register_button">Тіркелу</string>
+    <string name="to_register">Аккаунт жоқ па? Тіркеліңіз</string>
+    <string name="to_login">Аккаунт бар ма? Кіріңіз</string>
+    <string name="show_password">Құпиясөзді көрсету</string>
+    <string name="hide_password">Құпиясөзді жасыру</string>
+    <string name="error_email_format">Email-ді name@mail.kz түрінде енгізіңіз</string>
+    <string name="error_password_short">Құпиясөз кемінде 8 таңбадан тұруы керек</string>
+    <string name="session_expired">Сессия аяқталды — қайта кіріңіз</string>
+
+    <string name="search_hint">Тауар іздеу</string>
+    <string name="clear_search">Іздеуді тазалау</string>
+    <string name="all_categories">Барлығы</string>
+    <string name="sort">Сұрыптау</string>
+    <string name="sort_default">Әдепкі</string>
+    <string name="sort_price_asc">Алдымен арзаны</string>
+    <string name="sort_price_desc">Алдымен қымбаты</string>
+    <string name="sort_name">Атауы бойынша</string>
+    <string name="sort_newest">Жаңалары</string>
+    <string name="category_electronics">Электроника</string>
+    <string name="category_home">Үйге арналған</string>
+    <string name="category_accessories">Аксессуарлар</string>
+    <string name="category_food">Азық-түлік</string>
+    <string name="in_stock">Қоймада: %1$d дана</string>
+    <string name="out_of_stock">Қоймада жоқ</string>
+    <string name="add_to_cart">Себетке</string>
+    <string name="added_to_cart">Себетке қосылды</string>
+    <string name="stock_limit">Қоймада бұдан артық жоқ</string>
+    <string name="nothing_found">Ештеңе табылмады</string>
+    <string name="nothing_found_hint">Басқа сұрау немесе санатты көріңіз</string>
+
+    <string name="error_offline">Интернет байланысы жоқ</string>
+    <string name="error_timeout">Сервер ұзақ жауап бермей тұр</string>
+    <string name="error_unknown">Бірдеңе дұрыс болмады</string>
+    <string name="retry">Қайталау</string>
+
+    <string name="quantity">Саны</string>
+    <string name="decrease">Азайту</string>
+    <string name="increase">Көбейту</string>
+    <string name="remove">Жою</string>
+    <string name="cart_empty">Себет бос</string>
+    <string name="cart_empty_hint">Каталогтан тауар қосыңыз</string>
+    <string name="to_catalog">Каталогқа</string>
+    <string name="promo_hint">Промокод</string>
+    <string name="apply">Қолдану</string>
+    <string name="subtotal">Тауарлар</string>
+    <string name="discount">Жеңілдік</string>
+    <string name="total">Барлығы</string>
+    <string name="checkout">Тапсырыс беру</string>
+
+    <string name="payment_title">№%1$d тапсырысты төлеу</string>
+    <string name="choose_card">Төлем картасы</string>
+    <string name="card_ok">Visa •••• 4242</string>
+    <string name="card_declined">Mastercard •••• 0002 · сынақ, қаражат жоқ</string>
+    <string name="card_slow">Visa •••• 0119 · сынақ, банк жауап бермейді</string>
+    <string name="pay">%1$s төлеу</string>
+    <string name="paying">Төлеп жатырмыз…</string>
+    <string name="payment_success">Тапсырыс төленді</string>
+    <string name="order_number">№%1$d тапсырыс</string>
+    <string name="to_orders">Менің тапсырыстарым</string>
+    <string name="continue_shopping">Сатып алуды жалғастыру</string>
+
+    <string name="orders_empty">Әзірге тапсырыс жоқ</string>
+    <string name="status_created">Төлемді күтуде</string>
+    <string name="status_paid">Төленді</string>
+    <string name="status_shipped">Жіберілді</string>
+    <string name="status_delivered">Жеткізілді</string>
+    <string name="status_cancelled">Бас тартылды</string>
+    <string name="cancel_order">Тапсырыстан бас тарту</string>
+    <string name="pay_order">Төлеу</string>
+    <string name="items_count">Тауарлар: %1$d</string>
+
+    <string name="language">Тіл</string>
+    <string name="language_ru">Русский</string>
+    <string name="language_kk">Қазақша</string>
+    <string name="logout">Шығу</string>
+    <string name="server">Сервер: %1$s</string>
+    <string name="version">Нұсқа %1$s</string>
+
+    <string name="notifications_channel">Тапсырыстар</string>
+    <string name="notification_paid">№%1$d тапсырыс %2$s сомаға төленді</string>
+</resources>

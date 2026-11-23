@@ -1,0 +1,39 @@
+appId: kz.duken.mobile
+name: Регистрация и покупка
+tags: [smoke]
+---
+- launchApp:
+    clearState: true
+    arguments:
+      api_base_url: "http://10.0.2.2:8000/"
+- tapOn:
+    id: "switch_auth_mode"
+- tapOn:
+    id: "email_input"
+- inputRandomEmail
+- tapOn:
+    id: "password_input"
+- inputText: "Duken-Test-42"
+- hideKeyboard
+- tapOn:
+    id: "register_button"
+- assertVisible:
+    id: "product_list"
+- tapOn:
+    id: "add_to_cart_2"
+# Число на значке корзины — так, как его прочитает TalkBack
+- assertVisible: "Корзина, товаров: 1"
+- tapOn:
+    id: "nav_cart"
+- assertVisible:
+    id: "total"
+- tapOn:
+    id: "checkout_button"
+- tapOn:
+    id: "pay_button"
+- tapOn:
+    id: "com.android.permissioncontroller:id/permission_allow_button"
+    optional: true    # системный диалог уведомлений после первой оплаты (Android 13+)
+- assertVisible:
+    id: "success_title"
+    text: "Заказ оплачен"

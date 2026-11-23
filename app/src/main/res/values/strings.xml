@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Дүкен</string>
+
+    <string name="nav_catalog">Каталог</string>
+    <string name="nav_cart">Корзина</string>
+    <string name="nav_orders">Заказы</string>
+    <string name="nav_profile">Профиль</string>
+    <string name="cart_with_items">Корзина, товаров: %1$d</string>
+    <string name="back">Назад</string>
+
+    <string name="login_title">Вход</string>
+    <string name="register_title">Регистрация</string>
+    <string name="email">Email</string>
+    <string name="password">Пароль</string>
+    <string name="login_button">Войти</string>
+    <string name="register_button">Зарегистрироваться</string>
+    <string name="to_register">Нет аккаунта? Зарегистрироваться</string>
+    <string name="to_login">Уже есть аккаунт? Войти</string>
+    <string name="show_password">Показать пароль</string>
+    <string name="hide_password">Скрыть пароль</string>
+    <string name="error_email_format">Введите email в формате name@mail.kz</string>
+    <string name="error_password_short">Пароль — не короче 8 символов</string>
+    <string name="session_expired">Сессия истекла — войдите снова</string>
+
+    <string name="search_hint">Поиск товаров</string>
+    <string name="clear_search">Очистить поиск</string>
+    <string name="all_categories">Все</string>
+    <string name="sort">Сортировка</string>
+    <string name="sort_default">По умолчанию</string>
+    <string name="sort_price_asc">Сначала дешевле</string>
+    <string name="sort_price_desc">Сначала дороже</string>
+    <string name="sort_name">По названию</string>
+    <string name="sort_newest">Новинки</string>
+    <string name="category_electronics">Электроника</string>
+    <string name="category_home">Для дома</string>
+    <string name="category_accessories">Аксессуары</string>
+    <string name="category_food">Продукты</string>
+    <string name="in_stock">В наличии: %1$d шт.</string>
+    <string name="out_of_stock">Нет в наличии</string>
+    <string name="add_to_cart">В корзину</string>
+    <string name="added_to_cart">Добавлено в корзину</string>
+    <string name="stock_limit">Больше нет на складе</string>
+    <string name="nothing_found">Ничего не найдено</string>
+    <string name="nothing_found_hint">Попробуйте другой запрос или категорию</string>
+
+    <string name="error_offline">Нет подключения к интернету</string>
+    <string name="error_timeout">Сервер долго не отвечает</string>
+    <string name="error_unknown">Что-то пошло не так</string>
+    <string name="retry">Повторить</string>
+
+    <string name="quantity">Количество</string>
+    <string name="decrease">Уменьшить</string>
+    <string name="increase">Увеличить</string>
+    <string name="remove">Удалить</string>
+    <string name="cart_empty">Корзина пуста</string>
+    <string name="cart_empty_hint">Добавьте товары из каталога</string>
+    <string name="to_catalog">В каталог</string>
+    <string name="promo_hint">Промокод</string>
+    <string name="apply">Применить</string>
+    <string name="subtotal">Товары</string>
+    <string name="discount">Скидка</string>
+    <string name="total">Итого</string>
+    <string name="checkout">Оформить заказ</string>
+
+    <string name="payment_title">Оплата заказа №%1$d</string>
+    <string name="choose_card">Карта для оплаты</string>
+    <string name="card_ok">Visa •••• 4242</string>
+    <string name="card_declined">Mastercard •••• 0002 · тестовая, без средств</string>
+    <string name="card_slow">Visa •••• 0119 · тестовая, банк не отвечает</string>
+    <string name="pay">Оплатить %1$s</string>
+    <string name="paying">Оплачиваем…</string>
+    <string name="payment_success">Заказ оплачен</string>
+    <string name="order_number">Заказ №%1$d</string>
+    <string name="to_orders">Мои заказы</string>
+    <string name="continue_shopping">Продолжить покупки</string>
+
+    <string name="orders_empty">Заказов пока нет</string>
+    <string name="status_created">Ждёт оплаты</string>
+    <string name="status_paid">Оплачен</string>
+    <string name="status_shipped">Отправлен</string>
+    <string name="status_delivered">Доставлен</string>
+    <string name="status_cancelled">Отменён</string>
+    <string name="cancel_order">Отменить заказ</string>
+    <string name="pay_order">Оплатить</string>
+    <string name="items_count">Товаров: %1$d</string>
+
+    <string name="language">Язык</string>
+    <string name="language_ru">Русский</string>
+    <string name="language_kk">Қазақша</string>
+    <string name="logout">Выйти</string>
+    <string name="server">Сервер: %1$s</string>
+    <string name="version">Версия %1$s</string>
+
+    <string name="notifications_channel">Заказы</string>
+    <string name="notification_paid">Заказ №%1$d оплачен на %2$s</string>
+</resources>

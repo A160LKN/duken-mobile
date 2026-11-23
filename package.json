@@ -1,0 +1,12 @@
+{
+  "name": "duken-mobile-tools",
+  "private": true,
+  "description": "Appium для автотестов: версия зафиксирована здесь, драйвер ставится в .appium/",
+  "scripts": {
+    "appium": "APPIUM_HOME=.appium appium --port 4723 --log-level warn",
+    "appium:driver": "APPIUM_HOME=.appium appium driver install uiautomator2"
+  },
+  "devDependencies": {
+    "appium": "^4.0.0"
+  }
+}

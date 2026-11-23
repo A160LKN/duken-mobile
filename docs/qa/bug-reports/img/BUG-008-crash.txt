@@ -1,0 +1,9 @@
+11-23 17:16:35.947 28921 28921 E AndroidRuntime: FATAL EXCEPTION: main
+11-23 17:16:35.947 28921 28921 E AndroidRuntime: java.lang.NullPointerException
+11-23 17:16:35.947 28921 28921 E AndroidRuntime: 	at kz.duken.mobile.ui.payment.PaymentViewModel.<init>(PaymentScreen.kt:69)
+11-23 17:16:35.947 28921 28921 E AndroidRuntime: 	at kz.duken.mobile.ui.DukenAppKt$DukenApp$9$1$1$6$invoke$$inlined$appViewModel$1.invoke(ViewModelFactory.kt:22)
+11-23 17:16:35.947 28921 28921 E AndroidRuntime: 	at kz.duken.mobile.ui.DukenAppKt$DukenApp$9$1$1$6$invoke$$inlined$appViewModel$1.invoke(ViewModelFactory.kt:21)
+11-23 17:16:35.947 28921 28921 E AndroidRuntime: 	at kz.duken.mobile.ui.DukenAppKt$DukenApp$9$1$1$6.invoke(DukenApp.kt:243)
+11-23 17:16:35.947 28921 28921 E AndroidRuntime: 	at kz.duken.mobile.ui.DukenAppKt$DukenApp$9$1$1$6.invoke(DukenApp.kt:167)
+11-23 17:16:35.951 28921 28921 E AndroidRuntime: 	at kz.duken.mobile.ui.DukenAppKt$DukenApp$9.invoke(DukenApp.kt:139)
+11-23 17:16:35.951 28921 28921 E AndroidRuntime: 	at kz.duken.mobile.ui.DukenAppKt$DukenApp$9.invoke(DukenApp.kt:138)

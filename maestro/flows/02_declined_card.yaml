@@ -1,0 +1,45 @@
+appId: kz.duken.mobile
+name: Отказ банка и повтор другой картой
+tags: [smoke]
+---
+- launchApp:
+    clearState: true
+    arguments:
+      api_base_url: "http://10.0.2.2:8000/"
+- tapOn:
+    id: "switch_auth_mode"
+- tapOn:
+    id: "email_input"
+- inputRandomEmail
+- tapOn:
+    id: "password_input"
+- inputText: "Duken-Test-42"
+- hideKeyboard
+- tapOn:
+    id: "register_button"
+- scrollUntilVisible:
+    element:
+      id: "add_to_cart_7"
+    direction: DOWN
+- tapOn:
+    id: "add_to_cart_7"
+- tapOn:
+    id: "nav_cart"
+- tapOn:
+    id: "checkout_button"
+- tapOn:
+    id: "card_tok_declined"
+- tapOn:
+    id: "pay_button"
+- assertVisible:
+    id: "payment_error"
+    text: "Оплата отклонена: недостаточно средств"
+- tapOn:
+    id: "card_tok_visa"
+- tapOn:
+    id: "pay_button"
+- tapOn:
+    id: "com.android.permissioncontroller:id/permission_allow_button"
+    optional: true    # системный диалог уведомлений после первой оплаты (Android 13+)
+- assertVisible:
+    id: "success_title"

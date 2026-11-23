@@ -1,0 +1,3 @@
+    * Hist  #2: ActivityRecord{346946d u0 kz.duken.mobile/.MainActivity t212}
+    * Hist  #1: ActivityRecord{e0b7f40 u0 kz.duken.mobile/.MainActivity t212}
+    * Hist  #0: ActivityRecord{afb3d8d u0 kz.duken.mobile/.MainActivity t212}

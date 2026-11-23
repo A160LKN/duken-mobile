@@ -1,0 +1,134 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Сборка, юнит-тесты, lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Юнит-тесты, lint, debug и release APK
+        run: ./gradlew --no-daemon testDebugUnitTest lintDebug assembleDebug assembleRelease
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Проверки ресурсов без устройства
+        run: |
+          pip install -q -r tests/requirements.txt
+          cd tests && python -m pytest suites/test_static.py -q -p no:cacheprovider
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apk
+          path: |
+            app/build/outputs/apk/debug/app-debug.apk
+            app/build/outputs/apk/release/app-release.apk
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-and-lint-reports
+          path: |
+            app/build/reports/tests/
+            app/build/reports/lint-results-debug.html
+
+  e2e:
+    name: E2E на эмуляторе (Appium, заглушка API)
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: apk
+          path: app/build/outputs/apk
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Appium и драйвер UiAutomator2
+        run: npm ci && npm run appium:driver
+      - run: pip install -q -r tests/requirements.txt
+      - name: KVM для аппаратного ускорения эмулятора
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
+      - name: Тесты на Android 15
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          script: ./scripts/ci-e2e.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-results-e2e
+          path: tests/allure-results
+
+  e2e-real-backend:
+    name: Смоук против настоящего shop-api
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: A160LKN/shop-api
+          path: shop-api
+      - name: shop-api, PostgreSQL и имитация шлюза в Docker
+        working-directory: shop-api
+        run: docker compose up -d --build --wait
+      - uses: actions/download-artifact@v4
+        with:
+          name: apk
+          path: app/build/outputs/apk
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci && npm run appium:driver
+      - run: pip install -q -r tests/requirements.txt
+      - name: KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
+      - name: Смоук на Android 15
+        uses: reactivecircus/android-emulator-runner@v2
+        env:
+          BACKEND: real
+          PYTEST_MARK: smoke
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          script: ./scripts/ci-e2e.sh
+      - name: Логи shop-api
+        if: failure()
+        working-directory: shop-api
+        run: docker compose logs --tail 200 api

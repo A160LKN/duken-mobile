@@ -155,6 +155,9 @@ class App:
 def app(driver, api, request):
     if config.BACKEND == "stub":
         api.reset()
+    closed = device.dismiss_foreign_anr()
+    if closed:
+        allure.attach(", ".join(closed), "closed-system-anr.txt", allure.attachment_type.TEXT)
     device.shell("am", "force-stop", config.APP_PACKAGE)
     device.clear_app_data()
     if not request.node.get_closest_marker("permissions"):

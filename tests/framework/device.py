@@ -136,3 +136,29 @@ def keyboard_top() -> int | None:
         if m:
             return int(m.group(1))
     return None
+
+
+def dismiss_foreign_anr(attempts: int = 3) -> list[str]:
+    """Закрыть системный диалог «… isn't responding» другого приложения (на холодном эмуляторе в CI
+    так зависает Pixel Launcher и перекрывает экран). Нажимается «Wait». Диалог о зависании самого
+    приложения не трогается — это дефект, его должен увидеть тест.
+    Возвращает, чьи диалоги были закрыты."""
+    import re as _re
+    closed = []
+    for _ in range(attempts):
+        focus = shell("dumpsys", "window", check=False)
+        m = _re.search(r"mCurrentFocus=.*Application Not Responding: ([\w.]+)", focus)
+        if not m:
+            break
+        if m.group(1) == config.APP_PACKAGE:
+            break
+        shell("uiautomator", "dump", "/sdcard/anr.xml", check=False)
+        xml = shell("cat", "/sdcard/anr.xml", check=False)
+        b = _re.search(r'resource-id="android:id/aerr_wait"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"', xml)
+        if not b:
+            break
+        x, y = (int(b[1]) + int(b[3])) // 2, (int(b[2]) + int(b[4])) // 2
+        shell("input", "tap", str(x), str(y))
+        closed.append(m.group(1))
+        time.sleep(1)
+    return closed

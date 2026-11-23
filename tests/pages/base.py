@@ -62,18 +62,30 @@ class BasePage:
         self.wait(timeout).until(ec.element_to_be_clickable(self.by_id(tag)), f"{tag} недоступен").click()
 
     def type(self, tag: str, value: str, clear: bool = True):
-        field = self.el(tag)
-        field.click()
-        if clear:
-            field.clear()
-        field.send_keys(value)
+        """Ввод в поле. Compose пересоздаёт узел поля при получении фокуса (анимация подписи),
+        поэтому на медленном устройстве ссылка на элемент устаревает между нажатием и вводом —
+        элемент ищется заново, а не используется старый."""
+        for attempt in range(3):
+            try:
+                self.el(tag).click()
+                field = self.el(tag)
+                if clear:
+                    field.clear()
+                self.el(tag).send_keys(value)
+                return
+            except StaleElementReferenceException:
+                if attempt == 2:
+                    raise
 
     def enabled(self, tag: str) -> bool:
         return self.el(tag).get_attribute("enabled") == "true"
 
     def hide_keyboard(self):
+        """Закрыть клавиатуру и дождаться, что она закрылась: иначе она закрывает кнопки внизу экрана,
+        и UiAutomator их не видит."""
         if self.driver.is_keyboard_shown():
             self.driver.hide_keyboard()
+            self.wait(5).until(lambda d: not d.is_keyboard_shown(), "клавиатура не закрылась")
 
     def _swipe_up(self, rect: dict, fraction: float = 0.6):
         """Медленный свайп с паузой перед отпусканием: список сдвигается ровно на палец, без инерции."""

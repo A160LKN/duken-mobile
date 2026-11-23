@@ -1,5 +1,7 @@
 package kz.duken.mobile.ui
 
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -136,7 +138,14 @@ fun DukenApp(deepLinkProductId: Int?, onDeepLinkHandled: () -> Unit) {
             if (isTab) BottomBar(nav, route, cartCount.sumOf { it.quantity })
         },
     ) { padding ->
-        NavHost(nav, startDestination = if (loggedIn) "catalog" else "login", modifier = Modifier.padding(padding)) {
+        NavHost(
+            nav,
+            startDestination = if (loggedIn) "catalog" else "login",
+            // Приложение рисуется от края до края, и adjustResize само ничего не сдвигает: экран поднимается
+            // над клавиатурой здесь, для всех экранов сразу. consumeWindowInsets — чтобы высота нижней панели,
+            // которую клавиатура перекрывает, не учитывалась дважды
+            modifier = Modifier.padding(padding).consumeWindowInsets(padding).imePadding(),
+        ) {
             composable("login") {
                 AuthScreen(false, appViewModel { c, s -> AuthViewModel(c.auth, s) }, sessionExpired) {
                     nav.navigate("register") { popUpTo("login") { inclusive = true } }

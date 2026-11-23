@@ -55,6 +55,17 @@ class TestCart:
         cart.wait_text("discount", tenge(price * percent // 100))
         assert cart.total() == tenge(price - price * percent // 100)
 
+    def test_keyboard_does_not_cover_promo_field(self, app):
+        """Клавиатура открыта — поле промокода и кнопка «Оформить заказ» над ней, а не под ней."""
+        from framework import device
+        cart = cart_with(app, 1)
+        cart.tap("promo_input")
+        cart.wait(5).until(lambda _: device.keyboard_top(), "клавиатура не открылась")
+        top = device.keyboard_top()
+        for tag in ("promo_input", "checkout_button"):
+            r = cart.el(tag).rect
+            assert r["y"] + r["height"] <= top, f"{tag} закрыт клавиатурой: низ {r['y'] + r['height']}, клавиатура с {top}"
+
     def test_unknown_promo_code(self, app):
         cart = cart_with(app, 1)
         cart.apply_promo("NOPE")

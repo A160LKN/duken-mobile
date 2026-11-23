@@ -126,3 +126,13 @@ def activity_count() -> int:
     out = shell("dumpsys", "activity", "activities")
     return sum(1 for line in out.splitlines()
                if "Hist" in line and f"{config.APP_PACKAGE}/{config.APP_ACTIVITY}" in line)
+
+
+def keyboard_top() -> int | None:
+    """Верхняя граница экранной клавиатуры в пикселях или None, если она скрыта."""
+    import re as _re
+    for line in shell("dumpsys", "window").splitlines():
+        m = _re.search(r"InsetsSource id=\d+ type=ime frame=\[\d+,(\d+)\]\[\d+,\d+\].*visible=true", line)
+        if m:
+            return int(m.group(1))
+    return None

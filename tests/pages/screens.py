@@ -1,4 +1,5 @@
 """Экраны приложения. Методы — действия пользователя, а не клики по координатам."""
+from framework import config
 from pages.base import BasePage
 
 
@@ -105,7 +106,7 @@ class ProductPage(BasePage):
 
 class CartPage(BasePage):
     def wait_quote(self) -> "CartPage":
-        self.el("total", timeout=15)
+        self.el("total", timeout=max(15, config.TIMEOUT * 1.5))
         return self
 
     def quantity(self, pid: int) -> int:

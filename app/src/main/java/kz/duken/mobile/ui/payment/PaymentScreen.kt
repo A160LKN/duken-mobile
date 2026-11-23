@@ -132,15 +132,10 @@ fun PaymentScreen(vm: PaymentViewModel, onPaid: (Order) -> Unit) {
     val state by vm.state.collectAsStateWithLifecycle()
     var card by rememberSaveable { mutableStateOf(CARDS.first().first) }
     val context = LocalContext.current
-    val askNotifications = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
 
     LaunchedEffect(state.paid) {
         val paid = state.paid ?: return@LaunchedEffect
         Notifications.orderPaid(context, paid.id, paid.total)
-        // Разрешение на уведомления просим после первой оплаты, когда понятно, зачем оно
-        if (Build.VERSION.SDK_INT >= 33 && !Notifications.canPost(context)) {
-            askNotifications.launch(Manifest.permission.POST_NOTIFICATIONS)
-        }
         onPaid(paid)
     }
 
@@ -196,6 +191,18 @@ fun PaymentScreen(vm: PaymentViewModel, onPaid: (Order) -> Unit) {
 
 @Composable
 fun PaymentSuccessScreen(orderId: Int, onOrders: () -> Unit, onCatalog: () -> Unit) {
+    val context = LocalContext.current
+    val askNotifications = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
+    // Разрешение на уведомления просим после оплаты, когда понятно, зачем оно. Запрос — с экрана,
+    // который остаётся на месте: экран оплаты уходит из стека сразу, и запрос с него на медленном
+    // устройстве мог повториться во время анимации перехода. rememberSaveable — один раз, и после поворота тоже
+    var asked by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        if (!asked && Build.VERSION.SDK_INT >= 33 && !Notifications.canPost(context)) {
+            asked = true
+            askNotifications.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
     Column(
         Modifier.fillMaxSize().padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),

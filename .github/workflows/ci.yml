@@ -78,6 +78,8 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           script: ./scripts/ci-e2e.sh
+        env:
+          UI_TIMEOUT: "20"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -120,6 +122,7 @@ jobs:
         env:
           BACKEND: real
           PYTEST_MARK: smoke
+          UI_TIMEOUT: "20"
         with:
           api-level: 35
           target: google_apis
@@ -128,6 +131,11 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           script: ./scripts/ci-e2e.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-results-real-backend
+          path: tests/allure-results
       - name: Логи shop-api
         if: failure()
         working-directory: shop-api
